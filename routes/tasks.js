@@ -1,33 +1,42 @@
-// Import express from express library
 import express from 'express';
-// Importing the functions I made
 import Task from '../models/task.js';
-import sequelize from '../config/config.js';
-// Declare router as the express router function
+
 const router = express.Router();
-//Get all tasks
+
+// Render all tasks
 router.get('/', async (req, res) => {
     try {
-        await sequelize.authenticate(); // Check database connection
-        await sequelize.sync(); // Sync models with the database
-        // Fetch all tasks from the database
         const tasks = await Task.findAll();
-        // Render the index view with the tasks
-        res.render('index', { tasks });
-    } catch (error) {
-        console.error('Error fetching tasks:', error); // Log the error for debugging
-        // Send a meaningful error message as a response
-        res.status(500).json({ message: 'Internal server error', error: error.message });
+        res.render('tasks', { tasks });
+    } catch (err) {
+        res.status(500).send('Error loading tasks');
     }
 });
 
-router.post('/tasks', async (req, res) => {
+// Render form for creating a new task
+router.get('/', (req, res) => {
+    res.render('new-task');
+});
+
+// Handle task creation
+router.post('/', async (req, res) => {
     try {
-        const task = await Task.create(req.body);
-        res.status(201).json(task);
-    }
-    catch(error){
-        res.status(400).json({ error: error.message});
+        const { title, description, status } = req.body;
+        await Task.create({ title, description, status });
+        res.redirect('/tasks');
+    } catch (err) {
+        res.status(500).send('Error creating task');
     }
 });
+
+// Handle task deletion
+router.post('/delete/:id', async (req, res) => {
+    try {
+        await Task.destroy({ where: { id: req.params.id } });
+        res.redirect('/tasks');
+    } catch (err) {
+        res.status(500).send('Error deleting task');
+    }
+});
+
 export default router;
