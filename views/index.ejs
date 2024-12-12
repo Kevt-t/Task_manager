@@ -44,18 +44,17 @@
             <button type="button" class="btn-close close-btn" data-bs-dismiss="modal" aria-label="Close"></button>
           </section>
           <section class="modal-body">
-            <form id="edit-task-form">
-              <input type="hidden" id="edit-task-id">
+            <form id="add-task-form" method="post" action="/api/tasks">
               <section class="mb-3">
-                <label for="edit-title" class="form-label">Title:</label>
-                <input type="text" id="edit-title" name="title" class="form-control" required>
+                <label for="title" class="form-label">Title:</label>
+                <input type="text" id="title" name="title" class="form-control" required>
               </section>
               <section class="mb-3">
-                <label for="edit-description" class="form-label">Description:</label>
-                <textarea id="edit-description" name="description" class="form-control"></textarea>
+                <label for="description" class="form-label">Description:</label>
+                <textarea id="description" name="description" class="form-control"></textarea>
               </section>
-              <button type="submit" class="btn btn-primary">Update Task</button>
-            </form>
+              <button type="submit" class="btn btn-success">Add Task</button>
+            </form>            
           </section>
         </section>
       </section>
