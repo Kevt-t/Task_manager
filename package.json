@@ -12,9 +12,12 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bootstrap": "^5.3.3",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
     "mysql2": "^3.11.5",
+    "path": "^0.12.7",
     "sequelize": "^6.37.5"
   }
 }

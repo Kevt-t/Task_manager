@@ -1,74 +1,33 @@
+// Import express from express library
 import express from 'express';
+// Importing the functions I made
 import Task from '../models/task.js';
-
+import sequelize from '../config/config.js';
+// Declare router as the express router function
 const router = express.Router();
-
-// Create a new task
-router.post('/', async (req, res) => {
-    try {
-        const { title, description, status } = req.body;
-        const newTask = await Task.create({ title, description, status });
-        res.status(201).json(newTask);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Get all tasks
+//Get all tasks
 router.get('/', async (req, res) => {
     try {
+        await sequelize.authenticate(); // Check database connection
+        await sequelize.sync(); // Sync models with the database
+        // Fetch all tasks from the database
         const tasks = await Task.findAll();
-        res.status(200).json(tasks);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        // Render the index view with the tasks
+        res.render('index', { tasks });
+    } catch (error) {
+        console.error('Error fetching tasks:', error); // Log the error for debugging
+        // Send a meaningful error message as a response
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 });
 
-// Get a single task by ID
-router.get('/:id', async (req, res) => {
+router.post('/tasks', async (req, res) => {
     try {
-        const task = await Task.findByPk(req.params.id);
-        if (task) {
-            res.status(200).json(task);
-        } else {
-            res.status(404).json({ message: 'Task not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+        const task = await Task.create(req.body);
+        res.status(201).json(task);
+    }
+    catch(error){
+        res.status(400).json({ error: error.message});
     }
 });
-
-// Update a task
-router.put('/:id', async (req, res) => {
-    try {
-        const { title, description, status } = req.body;
-        const [updated] = await Task.update(
-            { title, description, status },
-            { where: { id: req.params.id } }
-        );
-        if (updated) {
-            const updatedTask = await Task.findByPk(req.params.id);
-            res.status(200).json(updatedTask);
-        } else {
-            res.status(404).json({ message: 'Task not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Delete a task
-router.delete('/:id', async (req, res) => {
-    try {
-        const deleted = await Task.destroy({ where: { id: req.params.id } });
-        if (deleted) {
-            res.status(204).send();
-        } else {
-            res.status(404).json({ message: 'Task not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 export default router;
